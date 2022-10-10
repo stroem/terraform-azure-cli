@@ -49,17 +49,21 @@ build: check-terraform-release check-azure-cli-release
 		-t $(IMAGE_NAME):$(IMAGE_TAG) .
 	@echo "Image successfully builded!"
 
-.PHONY: save
-save:
+.PHONY: artifact-save
+artifact-save:
 	install -d build
 	docker image save \
 		--output build/image_${IMAGE_TAG}.tar \
 		${IMAGE_NAME}:${IMAGE_TAG}
 
-.PHONY: load
-load:
+.PHONY: artifact-load
+artifact-load:
 	docker image load \
 		--input build/image_${IMAGE_TAG}.tar
+
+.PHONY: publish
+publish:
+	docker push ${IMAGE_NAME}:${IMAGE_TAG}
 
 .PHONY: test
 test: build
