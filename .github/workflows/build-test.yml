@@ -26,24 +26,24 @@ jobs:
     runs-on: ubuntu-20.04
 
     outputs:
-      tf_versions: ${{ steps.set-matrix.outputs.tf_versions }}
-      azcli_versions: ${{ steps.set-matrix.outputs.azcli_versions }}
+      tf_versions: ${{ steps.set-terraform.outputs.versions }}
+      azcli_versions: ${{ steps.set-azurecli.outputs.versions }}
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
 
       - name: Save supported terraform versions as output
-        id: set-matrix
+        id: set-terraform
         run: |
           TF_VERSIONS=$(make terraform-releases | jq -Rc '[inputs]')
-          echo "::set-output name=tf_versions::${TF_VERSIONS}"
+          echo "::set-output name=versions::${TF_VERSIONS}"
 
       - name: Save supported azure cli versions as output
-        id: set-matrix
+        id: set-azurecli
         run: |
           AZ_VERSIONS=$(make azure-cli-releases | jq -Rc '[inputs]')
-          echo "::set-output name=azcli_versions::${AZ_VERSIONS}"
+          echo "::set-output name=versions::${AZ_VERSIONS}"
 
   build:
     runs-on: ubuntu-20.04
