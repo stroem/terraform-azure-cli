@@ -27,7 +27,7 @@ jobs:
         run: |
           VERSIONS=$(make releases | jq -c)
           echo ${VERSIONS}
-          echo "::set-output name=versions::${VERSIONS}"
+          echo "::set-output name=matrix::${VERSIONS}"
 
   build_push_release:
     runs-on: ubuntu-20.04
