@@ -36,9 +36,15 @@ jobs:
         id: set-matrix
         run: |
           TF_VERSIONS=$(make terraform-releases | jq -Rc '[inputs]')
+          TF_VERSIONS="${TF_VERSIONS//'%'/%25}"
+          TF_VERSIONS="${TF_VERSIONS//$'\n'/%0A}"
+          TF_VERSIONS="${TF_VERSIONS//$'\r'/%0D}"
           echo "::set-output name=tf_versions::${TF_VERSIONS}"
           echo "${TF_VERSIONS}"
           AZ_VERSIONS=$(make azure-cli-releases | jq -Rc '[inputs]')
+          AZ_VERSIONS="${AZ_VERSIONS//'%'/%25}"
+          AZ_VERSIONS="${AZ_VERSIONS//$'\n'/%0A}"
+          AZ_VERSIONS="${AZ_VERSIONS//$'\r'/%0D}"
           echo "::set-output name=azcli_versions::${AZ_VERSIONS}"
           echo "${AZ_VERSIONS}"
 
@@ -47,8 +53,8 @@ jobs:
     needs: load_supported_versions
     strategy:
       matrix:
-        tf_version: ${{ needs.load_supported_versions.outputs.tf_versions }}
-        azcli_version: ${{ needs.load_supported_versions.outputs.azcli_versions }}
+        tf_version: ${{ fromJSON(needs.load_supported_versions.outputs.tf_versions) }}
+        azcli_version: ${{ fromJSON(needs.load_supported_versions.outputs.azcli_versions) }}
 
     steps:
       - name: Check out the repo
