@@ -49,9 +49,9 @@ jobs:
         run: |
           TERRAFORM_VERSION=$(echo "${{ matrix.version }}" | jq -Rr 'split("_")[0] | split("-")[1]')
           AZURE_CLI_VERSION=$(echo "${{ matrix.version }}" | jq -Rr 'split("_")[1] | split("-")[1]')
-          echo "IMAGE_TAG=terraform-$(TERRAFORM_VERSION)_azurecli-$(AZURE_CLI_VERSION)" >> $GITHUB_ENV
-          echo "TERRAFORM_VERSION=$(TERRAFORM_VERSION)" >> $GITHUB_ENV
-          echo "AZURE_CLI_VERSION=$(AZURE_CLI_VERSION)" >> $GITHUB_ENV
+          echo "IMAGE_TAG=terraform-${TERRAFORM_VERSION}_azurecli-${AZURE_CLI_VERSION}" >> $GITHUB_ENV
+          echo "TERRAFORM_VERSION=${TERRAFORM_VERSION}" >> $GITHUB_ENV
+          echo "AZURE_CLI_VERSION=${AZURE_CLI_VERSION}" >> $GITHUB_ENV
 
       - name: Build image
         run: make build
