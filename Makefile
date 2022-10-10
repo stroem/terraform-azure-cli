@@ -3,6 +3,7 @@ TERRAFORM_VERSION ?=
 IMAGE_NAME := stroem/terraform-azure-cli
 IMAGE_TAG ?= latest
 NO_VERSIONS ?= 100
+ARTIFACT_FOLDER ?= build
 
 .PHONY: terraform-releases
 terraform-releases:
@@ -53,13 +54,13 @@ build: check-terraform-release check-azure-cli-release
 artifact-save:
 	install -d build
 	docker image save \
-		--output build/image_${IMAGE_TAG}.tar \
+		--output $(ARTIFACT_FOLDER)/image_${IMAGE_TAG}.tar \
 		${IMAGE_NAME}:${IMAGE_TAG}
 
 .PHONY: artifact-load
 artifact-load:
 	docker image load \
-		--input build/image_${IMAGE_TAG}.tar
+		--input $(ARTIFACT_FOLDER)/image_${IMAGE_TAG}.tar
 
 .PHONY: publish
 publish:

@@ -101,7 +101,7 @@ jobs:
           name: ${{ env.IMAGE_TAG }}
 
       - name: Load image
-        run: make artifact-load
+        run: ARTIFACT_FOLDER=. make artifact-load
 
       - name: Run structure tests
         run: make test
