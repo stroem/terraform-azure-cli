@@ -19,31 +19,39 @@ on:
 
 env:
   IMAGE_NAME: "terraform-azure-cli"
-  NO_VERSIONS: 5
+  NO_VERSIONS: 2
 
 jobs:
   load_supported_versions:
     runs-on: ubuntu-20.04
 
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      tf_versions: ${{ steps.set-matrix.outputs.tf_versions }}
+      azcli_versions: ${{ steps.set-matrix.outputs.azcli_versions }}
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: Save supported versions as output
+      - name: Save supported terraform versions as output
         id: set-matrix
         run: |
           TF_VERSIONS=$(make terraform-releases | jq -Rc '[inputs]')
+          echo "::set-output name=tf_versions::${TF_VERSIONS}"
+
+      - name: Save supported azure cli versions as output
+        id: set-matrix
+        run: |
           AZ_VERSIONS=$(make azure-cli-releases | jq -Rc '[inputs]')
-          echo "::set-output name=matrix::{\"azcli_version\": ${AZ_VERSIONS}, \"tf_version\": $TF_VERSIONS}"
+          echo "::set-output name=azcli_versions::${AZ_VERSIONS}"
 
   build:
     runs-on: ubuntu-20.04
     needs: load_supported_versions
     strategy:
-      matrix: ${{ fromJSON(needs.load_supported_versions.outputs.matrix) }}
+      matrix:
+        tf_version: ${{ fromJSON(needs.load_supported_versions.outputs.tf_versions) }}
+        azcli_version: ${{ fromJSON(needs.load_supported_versions.outputs.azcli_versions) }}
 
     steps:
       - name: Check out the repo
