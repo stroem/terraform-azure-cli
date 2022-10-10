@@ -1,4 +1,4 @@
-name: release
+name: Release all
 
 # trigger on published release
 on:
@@ -10,20 +10,17 @@ jobs:
     runs-on: ubuntu-20.04
 
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      matrix: ${{ steps.set-versions.outputs.matrix }}
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: Save supported versions as output
-        id: set-matrix
+      - name: Save released versions as output
+        id: set-versions
         run: |
-          SUPPORTED_VERSIONS=$(cat ./supported_versions.json)
-          SUPPORTED_VERSIONS="${SUPPORTED_VERSIONS//'%'/%25}"
-          SUPPORTED_VERSIONS="${SUPPORTED_VERSIONS//$'\n'/%0A}"
-          SUPPORTED_VERSIONS="${SUPPORTED_VERSIONS//$'\r'/%0D}"
-          echo "::set-output name=matrix::${SUPPORTED_VERSIONS}"
+          VERSIONS=$(make releases | jq -Rrcn '[inputs]')
+          echo "::set-output name=matrix::${VERSIONS}"
 
   build_push_release:
     runs-on: ubuntu-20.04
@@ -31,36 +28,39 @@ jobs:
       - load_supported_versions
 
     strategy:
-      matrix: ${{ fromJSON(needs.load_supported_versions.outputs.matrix) }}
+      fail-fast: true
+      matrix:
+        version: ${{ fromJSON(needs.load_supported_versions.outputs.matrix) }}
 
     env:
-      ORGANIZATION: "zenika"
-      IMAGE_NAME: "terraform-azure-cli"
+      IMAGE_NAME: "stroem/terraform-azure-cli"
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: Get and save release tag
-        run: echo "RELEASE_TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
-
-      - name: Build and save image release tag
-        run: echo "IMAGE_RELEASE_TAG=release-${RELEASE_TAG}_terraform-${{ matrix.tf_version }}_azcli-${{ matrix.azcli_version }}" >> $GITHUB_ENV
+      - name: Setup environment
+        run: |
+          TERRAFORM_VERSION=$(echo "${{ matrix.version }}" | jq -Rr 'split("_")[0] | split("-")[1]')
+          AZURE_CLI_VERSION=$(echo "${{ matrix.version }}" | jq -Rr 'split("_")[1] | split("-")[1]')
+          echo "IMAGE_TAG=terraform-${TERRAFORM_VERSION}_azurecli-${AZURE_CLI_VERSION}" >> $GITHUB_ENV
+          echo "TERRAFORM_VERSION=${TERRAFORM_VERSION}" >> $GITHUB_ENV
+          echo "AZURE_CLI_VERSION=${AZURE_CLI_VERSION}" >> $GITHUB_ENV
 
       - name: Build image
-        run: docker image build . --file Dockerfile --build-arg TERRAFORM_VERSION=${{ matrix.tf_version }} --build-arg AZURE_CLI_VERSION=${{ matrix.azcli_version }} --tag ${ORGANIZATION}/${IMAGE_NAME}:${IMAGE_RELEASE_TAG}
+        run: make build
 
       - name: Login to Docker Hub registry
         run: echo '${{ secrets.DOCKERHUB_PASS }}' | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
       - name: Push image to registry
-        run: docker push ${ORGANIZATION}/${IMAGE_NAME}:${IMAGE_RELEASE_TAG}
+        run: make publish
 
       - name: Save image
-        run: docker image save -o ${IMAGE_NAME}-${IMAGE_RELEASE_TAG}.tar ${ORGANIZATION}/${IMAGE_NAME}:${IMAGE_RELEASE_TAG}
+        run: make artifact-save
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_RELEASE_TAG }}
-          path: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_RELEASE_TAG }}.tar
+          name: ${{ env.IMAGE_TAG }}
+          path: build/image_${{ env.IMAGE_TAG }}.tar
