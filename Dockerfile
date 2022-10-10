@@ -58,4 +58,6 @@ RUN groupadd --gid 1001 nonroot \
   && chown nonroot:nonroot /workspace
 USER nonroot
 
+HEALTHCHECK CMD exit 0
+
 CMD ["bash"]
