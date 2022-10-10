@@ -72,7 +72,7 @@ test: build
 	envsubst '$${AZURE_CLI_VERSION},$${TERRAFORM_VERSION}' < tests/container-structure-tests.yml.template > /tmp/container-structure-tests.yml
 	@echo "Test config successfully generated!"
 	@echo "Executing container structure test..."
-	docker container run --rm -it \
+	docker container run --rm \
 		-v /tmp/container-structure-tests.yml:/tests.yml:ro \
 		-v /var/run/docker.sock:/var/run/docker.sock:ro \
 		gcr.io/gcp-runtimes/container-structure-test:v1.10.0 \
