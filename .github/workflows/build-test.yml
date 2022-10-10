@@ -35,7 +35,7 @@ jobs:
       - name: Save supported versions as output
         id: set-matrix
         run: |
-          TF_VERSIONS=$(make terraform-release | jq -Rc '[inputs]')
+          TF_VERSIONS=$(make terraform-releases | jq -Rc '[inputs]')
           echo "::set-output name=tf_version::${TF_VERSIONS}"
           AZ_VERSIONS=$(make azure-cli-releases | jq -Rc '[inputs]')
           echo "::set-output name=azcli_version::${TF_VERSIONS}"
