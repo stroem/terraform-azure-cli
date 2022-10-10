@@ -65,7 +65,7 @@ jobs:
         run: make artifact-save
 
       - name: Upload image artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.IMAGE_TAG }}
           path: build/image_${{ env.IMAGE_TAG }}.tar
@@ -93,7 +93,7 @@ jobs:
           echo "AZURE_CLI_VERSION=${AZURE_CLI_VERSION}" >> $GITHUB_ENV
 
       - name: Download image artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ env.IMAGE_TAG }}
 
