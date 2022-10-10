@@ -36,10 +36,10 @@ jobs:
         id: set-matrix
         run: |
           TF_VERSIONS=$(make terraform-releases | jq -Rc '[inputs]')
-          echo "::set-output name=tf_version::${TF_VERSIONS}"
+          echo "::set-output name=tf_versions::${TF_VERSIONS}"
           echo "${TF_VERSIONS}"
           AZ_VERSIONS=$(make azure-cli-releases | jq -Rc '[inputs]')
-          echo "::set-output name=azcli_version::${AZ_VERSIONS}"
+          echo "::set-output name=azcli_versions::${AZ_VERSIONS}"
           echo "${AZ_VERSIONS}"
 
   build:
@@ -47,8 +47,8 @@ jobs:
     needs: load_supported_versions
     strategy:
       matrix:
-        tf_version: ${{ fromJSON(needs.load_supported_versions.outputs.tf_version) }}
-        azcli_version: ${{ fromJSON(needs.load_supported_versions.outputs.azcli_version) }}
+        tf_version: ${{ needs.load_supported_versions.outputs.tf_versions }}
+        azcli_version: ${{ needs.load_supported_versions.outputs.azcli_versions }}
 
     steps:
       - name: Check out the repo
@@ -70,7 +70,7 @@ jobs:
       - name: Upload image artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.IMAGE_NAME }}_${{ env.IMAGE_TAG }}
+          name: ${{ env.IMAGE_TAG }}
           path: build/image_${{ env.IMAGE_TAG }}.tar
 
   test:
@@ -95,7 +95,7 @@ jobs:
       - name: Download image artifact
         uses: actions/download-artifact@v2
         with:
-          name: ${{ env.IMAGE_NAME }}_${{ env.IMAGE_TAG }}
+          name: ${{ env.IMAGE_TAG }}
 
       - name: Load image
         run: make artifact-load

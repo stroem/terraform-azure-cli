@@ -5,8 +5,7 @@ name: push-latest
 on:
   push:
     branches:
-      - "**"
-      - "!master"
+      - "master"
     paths:
       - "Dockerfile"
       - "hashicorp.asc"
@@ -42,12 +41,3 @@ jobs:
 
       - name: Push image to registry
         run: make publish
-
-      - name: Save image
-        run: make artifact-save
-
-      - name: Upload image artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}
-          path: build/image_${{ env.IMAGE_TAG }}.tar
