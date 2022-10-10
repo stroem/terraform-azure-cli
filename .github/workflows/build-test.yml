@@ -49,6 +49,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: load_supported_versions
     strategy:
+      fail-fast: true
       matrix:
         tf_version: ${{ fromJSON(needs.load_supported_versions.outputs.tf_versions) }}
         azcli_version: ${{ fromJSON(needs.load_supported_versions.outputs.azcli_versions) }}

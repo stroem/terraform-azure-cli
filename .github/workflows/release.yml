@@ -25,8 +25,7 @@ jobs:
       - name: Save released versions as output
         id: set-versions
         run: |
-          VERSIONS=$(make releases | jq -c)
-          echo ${VERSIONS}
+          VERSIONS=$(make releases | jq -Rrcn '[inputs]')
           echo "::set-output name=matrix::${VERSIONS}"
 
   build_push_release:
@@ -35,7 +34,9 @@ jobs:
       - load_supported_versions
 
     strategy:
-      matrix: ${{ fromJSON(needs.load_supported_versions.outputs.matrix) }}
+      fail-fast: true
+      matrix:
+        version: ${{ fromJSON(needs.load_supported_versions.outputs.matrix) }}
 
     env:
       IMAGE_NAME: "stroem/terraform-azure-cli"
@@ -46,10 +47,11 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "IMAGE_TAG=terraform-${{ matrix.terraform }}_azurecli-${{ matrix.azurecli }}"
-          echo "IMAGE_TAG=terraform-${{ matrix.terraform }}_azurecli-${{ matrix.azurecli }}" >> $GITHUB_ENV
-          echo "TERRAFORM_VERSION=${{ matrix.terraform }}" >> $GITHUB_ENV
-          echo "AZURE_CLI_VERSION=${{ matrix.azurecli }}" >> $GITHUB_ENV
+          TERRAFORM_VERSION=$(echo "${{ matrix.version }}" | jq -Rr 'split("_")[0] | split("-")[1]')
+          AZURE_CLI_VERSION=$(echo "${{ matrix.version }}" | jq -Rr 'split("_")[1] | split("-")[1]')
+          echo "IMAGE_TAG=terraform-$(TERRAFORM_VERSION)_azurecli-$(AZURE_CLI_VERSION)" >> $GITHUB_ENV
+          echo "TERRAFORM_VERSION=$(TERRAFORM_VERSION)" >> $GITHUB_ENV
+          echo "AZURE_CLI_VERSION=$(AZURE_CLI_VERSION)" >> $GITHUB_ENV
 
       - name: Build image
         run: make build
