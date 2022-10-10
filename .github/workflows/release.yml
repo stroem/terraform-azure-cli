@@ -26,6 +26,7 @@ jobs:
         id: set-versions
         run: |
           VERSIONS=$(make releases | jq -c)
+          echo ${VERSIONS}
           echo "::set-output name=versions::${VERSIONS}"
 
   build_push_release:
