@@ -59,8 +59,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${BRANCH}_terraform-${{ matrix.tf_version }}_azcli-${{ matrix.azcli_version }}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=terraform-${{ matrix.tf_version }}_azcli-${{ matrix.azcli_version }}" >> $GITHUB_ENV
           echo "TERRAFORM_VERSION=${{ matrix.tf_version }}" >> $GITHUB_ENV
           echo "AZURE_CLI_VERSION=${{ matrix.azcli_version }}" >> $GITHUB_ENV
 
@@ -82,7 +81,9 @@ jobs:
       - build
       - load_supported_versions
     strategy:
-      matrix: ${{ fromJSON(needs.load_supported_versions.outputs.matrix) }}
+      matrix:
+        tf_version: ${{ fromJSON(needs.load_supported_versions.outputs.tf_versions) }}
+        azcli_version: ${{ fromJSON(needs.load_supported_versions.outputs.azcli_versions) }}
 
     steps:
       - name: Checkout source
@@ -90,8 +91,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${BRANCH}_terraform-${{ matrix.tf_version }}_azcli-${{ matrix.azcli_version }}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=terraform-${{ matrix.tf_version }}_azcli-${{ matrix.azcli_version }}" >> $GITHUB_ENV
           echo "TERRAFORM_VERSION=${{ matrix.tf_version }}" >> $GITHUB_ENV
           echo "AZURE_CLI_VERSION=${{ matrix.azcli_version }}" >> $GITHUB_ENV
 
