@@ -8,7 +8,7 @@ ARTIFACT_FOLDER ?= build
 .PHONY: releases
 releases:
 	@curl --silent https://api.github.com/repos/stroem/terraform-azure-cli/releases?per_page=$(NO_VERSIONS) \
-		jq -r '.[] | select(.prerelease == false).tag_name'
+		| jq -r '.[] | select(.prerelease == false).tag_name'
 
 .PHONY: terraform-releases
 terraform-releases:
