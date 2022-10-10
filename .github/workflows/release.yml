@@ -60,7 +60,7 @@ jobs:
         run: make artifact-save
 
       - name: Upload image artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.IMAGE_TAG }}
           path: build/image_${{ env.IMAGE_TAG }}.tar
