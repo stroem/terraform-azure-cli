@@ -37,8 +37,10 @@ jobs:
         run: |
           TF_VERSIONS=$(make terraform-releases | jq -Rc '[inputs]')
           echo "::set-output name=tf_version::${TF_VERSIONS}"
+          echo "${TF_VERSIONS}"
           AZ_VERSIONS=$(make azure-cli-releases | jq -Rc '[inputs]')
-          echo "::set-output name=azcli_version::${TF_VERSIONS}"
+          echo "::set-output name=azcli_version::${AZ_VERSIONS}"
+          echo "${AZ_VERSIONS}"
 
   build:
     runs-on: ubuntu-20.04
