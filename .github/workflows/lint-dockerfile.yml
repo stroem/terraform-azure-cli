@@ -1,4 +1,4 @@
-name: lint-dockerfile
+name: Linting
 
 # trigger on any push
 # but not on master or tags

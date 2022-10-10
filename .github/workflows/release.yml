@@ -1,13 +1,7 @@
-name: release
+name: Release all
 
 # trigger on published release
 on:
-  push:
-    tags-ignore:
-      - "**"
-    branches:
-      - "**"
-      - "!master"
   release:
     types: [published]
 

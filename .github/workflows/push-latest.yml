@@ -1,4 +1,4 @@
-name: push-latest
+name: Release latest
 
 # trigger on push to master
 # only on Dockerfile related modifications
