@@ -8,7 +8,7 @@ ARG DEBIAN_VERSION=bullseye-20220125-slim
 FROM debian:${DEBIAN_VERSION} as terraform-cli
 ARG TERRAFORM_VERSION
 RUN apt-get update
-RUN apt-get install --no-install-recommends -y curl=7.74.0-1.3+deb11u3
+RUN apt-get install --no-install-recommends -y curl
 RUN apt-get install --no-install-recommends -y ca-certificates=20210119
 RUN apt-get install --no-install-recommends -y unzip=6.0-26+deb11u1
 RUN apt-get install --no-install-recommends -y gnupg=2.2.27-2+deb11u2
@@ -28,6 +28,7 @@ FROM debian:${DEBIAN_VERSION} as azure-cli
 ARG AZURE_CLI_VERSION
 ARG PYTHON_MAJOR_VERSION
 RUN apt-get update
+RUN apt-get install -y --no-install-recommends gcc python3-dev
 RUN apt-get install -y --no-install-recommends python3=${PYTHON_MAJOR_VERSION}.2-3
 RUN apt-get install -y --no-install-recommends python3-pip=20.3.4-4+deb11u1
 RUN pip3 install --no-cache-dir setuptools==60.8.2
