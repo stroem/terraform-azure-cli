@@ -17,17 +17,13 @@
 ## 📦 Supported tags and respective Dockerfile links
 Available image tags can be found on the Docker Hub registry: [stroem/terraform-azure-cli](https://hub.docker.com/r/stroem/terraform-azure-cli/tags)
 
-Supported versions are listed in the [`supported_versions.json` ](https://github.com/zenika-open-source/terraform-azure-cli/blob/master/supported_versions.json) file in project root folder.
+Supported versions are listed in the [releases page](https://github.com/zenika-open-source/terraform-azure-cli/releases).
 
 The following image tag strategy is applied:
 * `stroem/terraform-azure-cli:latest` - build from master
-  * Included CLI versions are the newest in the [`supported_versions.json` ](https://github.com/zenika-open-source/terraform-azure-cli/blob/master/supported_versions.json) file.
-* `stroem/terraform-azure-cli:release-S.T_terraform-UU.VV.WW_azcli-XX.YY.ZZ` - build from releases
-  * `release-S.T` is the release tag
+* `stroem/terraform-azure-cli:terraform-UU.VV.WW_azcli-XX.YY.ZZ` - build from releases
   * `terraform-UU.VV.WWW` is the included **Terraform CLI** version
   * `azcli-XX.YY.ZZ` is the included **Azure CLI** version
-
-Please report to the [releases page](https://github.com/zenika-open-source/terraform-azure-cli/releases) for the changelogs.
 
 > Any other tags are not supported even if available.
 
@@ -64,19 +60,13 @@ It will :
 * Execute [container structure tests](https://github.com/GoogleContainerTools/container-structure-test) on the image.
 
 ```bash
-# launch dev script using latest supported versions for both Azure and Terraform CLI
-./dev.sh
-```
-
-Optionally, it is possible to choose the tools desired versions:
-
-```bash
 # Set desired tool versions
-AZURE_CLI_VERSION=2.24.2
-TERRAFORM_VERSION=0.15.5
+export AZURE_CLI_VERSION=2.40.0
+export TERRAFORM_VERSION=1.3.2
 
 # launch dev script with parameters
-./dev.sh $AZURE_CLI_VERSION $TERRAFORM_VERSION
+make build
+make test
 ```
 
 ## 🙏 Roadmap & Contributions
